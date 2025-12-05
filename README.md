@@ -54,6 +54,16 @@ This project implements a basic Retrieval-Augmented Generation (RAG) system usin
 -   `input/`: Directory to store input PDF files.
 -   `.env`: Configuration file for API keys (not committed to version control).
 
+## Dependencies
+
+The project relies on the following key libraries:
+
+-   **`langchain`**: The core framework for building applications with Large Language Models (LLMs). It provides the structure for chains, agents, and retrieval strategies.
+-   **`openai`**: The official Python client for the OpenAI API, used here to access models like `gpt-4o-mini` and embedding models.
+-   **`faiss-cpu`**: A library for efficient similarity search and clustering of dense vectors. It is used to store and retrieve the document embeddings.
+-   **`pypdf`**: A pure Python library used by `PyPDFLoader` to read and extract text from PDF files.
+-   **`python-dotenv`**: Reads key-value pairs from a `.env` file and sets them as environment variables, used for managing the API key securely.
+
 ## Architecture
 ```mermaid
 flowchart TD
@@ -88,3 +98,23 @@ flowchart TD
 2. **Query Vector $\rightarrow$ Vector Store $\rightarrow$ Relevant Context:** The query vector is used to perform a ***Similarity Search*** against the Vector Store. This search identifies the stored vector embeddings that are mathematically closest (most similar in meaning) to the user's question. A ***Retriever*** then fetches the original text chunks corresponding to those vectors, resulting in the Relevant Context.
 3. **Relevant Context $\rightarrow$ LLM:** The retrieved Relevant Context is combined with the original User Query and passed to the LLM (Large Language Model). This entire process is managed by the ***RetrievalQA*** chain, which effectively creates a prompt telling the LLM to answer the user's question only using the following context.
 4. **LLM $\rightarrow$ Final Answer:** The LLM processes the query and the provided context to generate a concise, accurate Final Answer.
+
+## Key Parameters
+
+Understanding these parameters helps in tuning the performance of the RAG system:
+
+-   **`chunk_size` (default: 500)**:
+    -   Defines the maximum number of characters in each text chunk.
+    -   *Impact*: Smaller chunks might miss context, while larger chunks might contain irrelevant information or exceed the LLM's context window.
+
+-   **`chunk_overlap` (default: 100)**:
+    -   Defines the number of characters that overlap between consecutive chunks.
+    -   *Impact*: Ensures that context is not lost at the boundaries of chunks. A higher overlap helps in maintaining continuity but increases redundancy.
+
+-   **`FAISS` (Vector Store)**:
+    -   Facebook AI Similarity Search. It indexes the vector embeddings of the text chunks.
+    -   *Usage*: It allows for extremely fast retrieval of the most relevant chunks based on the cosine similarity between the query vector and the document vectors.
+
+-   **`RetrievalQA` (Chain)**:
+    -   A specific type of LangChain chain designed for Question Answering over an index.
+    -   *Usage*: It orchestrates the entire process: taking the user's question, retrieving relevant documents from FAISS, and passing both the question and the documents to the LLM to generate an answer.
