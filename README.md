@@ -65,11 +65,11 @@ flowchart TD
     end
 
     subgraph Query [Query Processing]
-		    F[User Query] -->|OpenAIEmbeddings| G[Query Vector]
-        E -->|Retriever| H[Relevant Context]
-        H -->|RetrievalQA| I[LLM]
-        G -->|Similarity Search| E
-        I --> J[Final Answer]
+		F[User Query] -->|5-OpenAIEmbeddings| G[Query Vector]
+		G -->|6-Similarity Search| E
+        E -->|7-Retriever| H[Relevant Context]
+        H -->|8-RetrievalQA| I[LLM]
+        I --> |9-Generates Response|J[Final Answer]
     end
 ```
 
